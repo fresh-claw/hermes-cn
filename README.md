@@ -9,13 +9,13 @@
 Windows PowerShell：
 
 ```powershell
-iwr https://raw.githubusercontent.com/fresh-claw/hermes-desktop-zh-cn/main/install.ps1 -UseBasicParsing | iex
+iwr https://raw.githubusercontent.com/fresh-claw/hermes-cn/main/install.ps1 -UseBasicParsing | iex
 ```
 
 macOS / Linux / WSL2：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/fresh-claw/hermes-desktop-zh-cn/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/fresh-claw/hermes-cn/main/install.sh | bash
 ```
 
 macOS 也可以下载 `install.command` 后双击执行。
