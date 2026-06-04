@@ -1,0 +1,19 @@
+{
+  "version": "2026.06.04.1",
+  "homepage": "https://useai.live/hermes/",
+  "upstream": "https://github.com/NousResearch/hermes-agent",
+  "platforms": [
+    {
+      "id": "windows",
+      "command": "iwr https://useai.live/hermes/install.ps1 -UseBasicParsing | iex"
+    },
+    {
+      "id": "macos",
+      "command": "curl -fsSL https://useai.live/hermes/install.sh | bash"
+    },
+    {
+      "id": "linux",
+      "command": "curl -fsSL https://useai.live/hermes/install.sh | bash"
+    }
+  ]
+}
