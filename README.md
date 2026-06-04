@@ -9,13 +9,13 @@
 Windows PowerShell：
 
 ```powershell
-iwr https://useai.live/hermes/install.ps1 -UseBasicParsing | iex
+$u='https://useai.live/hermes/install.ps1';try{iex(irm $u)}catch{iex(irm https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@main/install.ps1)}
 ```
 
 macOS / Linux / WSL2：
 
 ```bash
-curl -fsSL https://useai.live/hermes/install.sh | bash
+(curl -fsSL https://useai.live/hermes/install.sh || curl -fsSL https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@main/install.sh) | bash
 ```
 
 macOS 也可以下载 `install.command` 后双击执行。
