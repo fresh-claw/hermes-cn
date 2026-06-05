@@ -14,7 +14,7 @@ fi
 
 run_installer() {
   local base_url="$1"
-  curl -fsSL "$base_url/install.sh" | XIAOMA_HERMES_BASE_URL="$base_url" bash
+  curl -fsSL "$base_url/install.sh" | XIAOMA_HERMES_BASE_URL="$base_url" bash -s -- --include-desktop
 }
 
 if ! run_installer "$BASE_URL"; then
