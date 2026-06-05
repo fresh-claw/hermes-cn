@@ -3,7 +3,7 @@ set -euo pipefail
 
 BASE_URL="${XIAOMA_HERMES_BASE_URL:-https://useai.live/hermes}"
 BASE_URL="${BASE_URL%/}"
-FALLBACK_BASE_URL="${XIAOMA_HERMES_FALLBACK_BASE_URL:-https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@main}"
+FALLBACK_BASE_URL="${XIAOMA_HERMES_FALLBACK_BASE_URL:-https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.05.2}"
 FALLBACK_BASE_URL="${FALLBACK_BASE_URL%/}"
 export XIAOMA_HERMES_ENTRYPOINT="macos-command"
 

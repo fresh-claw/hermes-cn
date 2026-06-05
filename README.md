@@ -9,13 +9,13 @@
 Windows PowerShell：
 
 ```powershell
-irm https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@main/install.ps1 | iex
+irm https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.05.2/install.ps1 | iex
 ```
 
 macOS / Linux / WSL2：
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@main/install.sh | bash -s -- --include-desktop
+curl -fsSL https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.05.2/install.sh | bash -s -- --include-desktop
 ```
 
 macOS 也可以下载 `install.command` 后双击执行。
