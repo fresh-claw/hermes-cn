@@ -4,7 +4,19 @@
 
 官网入口：<https://useai.live/hermes/>
 
-## 一键安装
+## 新手安装
+
+Windows：
+
+下载并运行：<https://useai.live/hermes/install-windows.cmd>
+
+macOS：
+
+下载并解压：<https://useai.live/hermes/hermes-macos-installer.zip>
+
+然后打开 `install.command`。
+
+## 命令行安装
 
 Windows PowerShell：
 
@@ -18,14 +30,12 @@ macOS / Linux / WSL2：
 curl -fsSL https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.05.2/install.sh | bash -s -- --include-desktop
 ```
 
-macOS 也可以下载 `install.command` 后双击执行。
-
 ## 平台策略
 
 | 平台 | 推荐方式 | 说明 |
 | --- | --- | --- |
-| Windows | PowerShell | 补官方桌面端，再调用中文增强安装器 |
-| macOS | Bash 或 `install.command` | 生成官方 Hermes.app，再补中文增强 |
+| Windows | `install-windows.cmd` | 补官方桌面端，再调用中文增强安装器 |
+| macOS | `hermes-macos-installer.zip` | 生成官方 Hermes.app，再补中文增强 |
 | Linux | Bash | 生成官方桌面端，再补中文增强 |
 
 ## 翻译范围
