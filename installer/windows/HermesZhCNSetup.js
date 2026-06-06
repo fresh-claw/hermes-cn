@@ -7,7 +7,7 @@ const readline = require("readline");
 const { spawnSync } = require("child_process");
 
 const DEFAULT_BASE_URL = "https://useai.live/hermes";
-const DEFAULT_FALLBACK_BASE_URL = "https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.05.2";
+const DEFAULT_FALLBACK_BASE_URL = "https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.06.1";
 
 function envOrDefault(name, fallback) {
   const value = process.env[name];
