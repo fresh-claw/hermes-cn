@@ -8,7 +8,7 @@
 
 Windows：
 
-下载并运行：<https://useai.live/hermes/install-windows.cmd>
+下载并运行：<https://useai.live/hermes/Hermes-zh-CN-Setup.exe>
 
 macOS：
 
@@ -34,7 +34,7 @@ curl -fsSL https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.05.2/instal
 
 | 平台 | 推荐方式 | 说明 |
 | --- | --- | --- |
-| Windows | `install-windows.cmd` | 补官方桌面端，再调用中文增强安装器 |
+| Windows | `Hermes-zh-CN-Setup.exe` | 补官方桌面端，再调用中文增强安装器 |
 | macOS | `hermes-macos-installer.zip` | 生成官方 Hermes.app，再补中文增强 |
 | Linux | Bash | 生成官方桌面端，再补中文增强 |
 
