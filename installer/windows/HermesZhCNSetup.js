@@ -6,8 +6,8 @@ const http = require("http");
 const readline = require("readline");
 const { spawnSync } = require("child_process");
 
-const DEFAULT_BASE_URL = "https://useai.live/hermes";
-const DEFAULT_FALLBACK_BASE_URL = "https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.07.1";
+const DEFAULT_BASE_URL = "http://47.121.138.43/hermes";
+const DEFAULT_FALLBACK_BASE_URL = "https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.07.2";
 
 function envOrDefault(name, fallback) {
   const value = process.env[name];
@@ -77,23 +77,26 @@ async function resolveInstallerScript(baseUrl, fallbackBaseUrl) {
   }
 
   const tempScript = path.join(os.tmpdir(), "xiaoma-hermes-install.ps1");
-  try {
-    const script = await downloadText(`${baseUrl}/install.ps1`);
-    if (!looksLikeInstaller(script)) {
-      throw new Error("网站返回的内容不是安装器脚本。");
+  const sources = [baseUrl, "https://useai.live/hermes", fallbackBaseUrl];
+  let lastError = null;
+  for (const source of sources) {
+    try {
+      const script = await downloadText(`${source}/install.ps1`);
+      if (!looksLikeInstaller(script)) {
+        throw new Error("当前入口返回的内容不是安装器脚本。");
+      }
+      fs.writeFileSync(tempScript, `\ufeff${script}`, "utf8");
+      return { scriptPath: tempScript, activeBaseUrl: source };
+    } catch (error) {
+      lastError = error;
+      console.log("当前入口不可用或过慢，正在切换下一个入口。");
+      console.log(error.message);
     }
-    fs.writeFileSync(tempScript, `\ufeff${script}`, "utf8");
-    return { scriptPath: tempScript, activeBaseUrl: baseUrl };
-  } catch (error) {
-    console.log("网站下载受限，改用备用入口。");
-    console.log(error.message);
-    const script = await downloadText(`${fallbackBaseUrl}/install.ps1`);
-    if (!looksLikeInstaller(script)) {
-      throw new Error("备用入口返回的内容不是安装器脚本。");
-    }
-    fs.writeFileSync(tempScript, `\ufeff${script}`, "utf8");
-    return { scriptPath: tempScript, activeBaseUrl: fallbackBaseUrl };
   }
+  if (lastError) {
+    throw lastError;
+  }
+  throw new Error("中文增强安装器下载失败。");
 }
 
 function runPowerShellInstaller(scriptPath, baseUrl, fallbackBaseUrl) {

