@@ -6,20 +6,24 @@
 #include <stdlib.h>
 #include <wchar.h>
 
+#include "embedded_install_ps1.h"
+
 static const wchar_t kLauncherScript[] =
     L"$ErrorActionPreference = 'Stop'\r\n"
-    L"try { [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8 } catch { }\r\n"
+    L"try { [Console]::OutputEncoding = [Text.Encoding]::Default } catch { }\r\n"
     L"$Host.UI.RawUI.WindowTitle = 'Hermes 中文增强安装器'\r\n"
     L"$base = $env:XIAOMA_HERMES_BASE_URL\r\n"
     L"if ([string]::IsNullOrWhiteSpace($base)) { $base = 'http://47.121.138.43/hermes' }\r\n"
     L"$base = $base.TrimEnd('/')\r\n"
     L"$fallback = $env:XIAOMA_HERMES_FALLBACK_BASE_URL\r\n"
-    L"if ([string]::IsNullOrWhiteSpace($fallback)) { $fallback = 'https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.07.2' }\r\n"
+    L"if ([string]::IsNullOrWhiteSpace($fallback)) { $fallback = 'https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.07.3' }\r\n"
     L"$fallback = $fallback.TrimEnd('/')\r\n"
     L"$exeDir = $env:XIAOMA_HERMES_EXE_DIR\r\n"
     L"$localPs1 = Join-Path $exeDir 'install.ps1'\r\n"
+    L"$embeddedPs1 = $env:XIAOMA_HERMES_EMBEDDED_INSTALL_PS1\r\n"
     L"function Pause-Hermes { Write-Host ''; Read-Host '按回车关闭窗口' | Out-Null }\r\n"
     L"function Test-InstallerPs1([string]$path) {\r\n"
+    L"  if ([string]::IsNullOrWhiteSpace($path)) { return $false }\r\n"
     L"  if (-not (Test-Path $path)) { return $false }\r\n"
     L"  $text = Get-Content -Raw -Path $path -ErrorAction SilentlyContinue\r\n"
     L"  return ($text -and $text.Contains('Hermes 中文增强') -and $text.Contains('Find-HermesCommand'))\r\n"
@@ -29,15 +33,18 @@ static const wchar_t kLauncherScript[] =
     L"Write-Host '将安装官方 Hermes 桌面端，并应用中文增强。'\r\n"
     L"Write-Host ''\r\n"
     L"try {\r\n"
-    L"  if (Test-Path $localPs1) {\r\n"
-    L"    & powershell -NoProfile -ExecutionPolicy Bypass -File $localPs1 -BaseUrl $base -FallbackBaseUrl $fallback\r\n"
+    L"  $installerPs1 = $null\r\n"
+    L"  if (Test-InstallerPs1 $localPs1) { $installerPs1 = $localPs1 }\r\n"
+    L"  elseif (Test-InstallerPs1 $embeddedPs1) { $installerPs1 = $embeddedPs1 }\r\n"
+    L"  if ($installerPs1) {\r\n"
+    L"    & powershell -NoProfile -ExecutionPolicy Bypass -File $installerPs1 -BaseUrl $base -FallbackBaseUrl $fallback\r\n"
     L"  } else {\r\n"
     L"    $tmp = Join-Path $env:TEMP 'xiaoma-hermes-install.ps1'\r\n"
     L"    $sources = @()\r\n"
     L"    if (-not [string]::IsNullOrWhiteSpace($env:XIAOMA_HERMES_BASE_URLS)) {\r\n"
     L"      $sources = $env:XIAOMA_HERMES_BASE_URLS -split ','\r\n"
     L"    } else {\r\n"
-    L"      $sources = @($base, 'https://useai.live/hermes', $fallback, 'https://fastly.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.07.2', 'https://gcore.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.07.2', 'https://raw.githubusercontent.com/fresh-claw/hermes-cn/v2026.06.07.2')\r\n"
+    L"      $sources = @($base, 'https://useai.live/hermes', $fallback, 'https://fastly.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.07.3', 'https://gcore.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.07.3', 'https://raw.githubusercontent.com/fresh-claw/hermes-cn/v2026.06.07.3')\r\n"
     L"    }\r\n"
     L"    $active = $null\r\n"
     L"    foreach ($source in $sources) {\r\n"
@@ -113,6 +120,23 @@ static int write_utf8_script(const wchar_t *path) {
   return ok ? 1 : 0;
 }
 
+static int write_embedded_install_script(const wchar_t *path) {
+  HANDLE file = CreateFileW(path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, NULL);
+  if (file == INVALID_HANDLE_VALUE) {
+    return 0;
+  }
+
+  const unsigned char bom[] = {0xEF, 0xBB, 0xBF};
+  DWORD written = 0;
+  BOOL ok = WriteFile(file, bom, sizeof(bom), &written, NULL);
+  if (ok) {
+    ok = WriteFile(file, kEmbeddedInstallPs1Utf8, (DWORD)kEmbeddedInstallPs1Utf8_len, &written, NULL);
+  }
+
+  CloseHandle(file);
+  return ok ? 1 : 0;
+}
+
 static void set_exe_dir_env(void) {
   wchar_t module_path[MAX_PATH];
   DWORD length = GetModuleFileNameW(NULL, module_path, MAX_PATH);
@@ -128,8 +152,8 @@ static void set_exe_dir_env(void) {
 }
 
 int wmain(void) {
-  SetConsoleOutputCP(CP_UTF8);
-  SetConsoleCP(CP_UTF8);
+  SetConsoleOutputCP(GetACP());
+  SetConsoleCP(GetACP());
   SetConsoleTitleW(L"Hermes 中文增强安装器");
   set_exe_dir_env();
 
@@ -154,6 +178,22 @@ int wmain(void) {
     pause_for_user();
     return 1;
   }
+
+  wchar_t embedded_script_path[MAX_PATH];
+  int embedded_path_len =
+      swprintf(embedded_script_path, MAX_PATH, L"%lsxiaoma-hermes-embedded-install.ps1", temp_dir);
+  if (embedded_path_len <= 0 || embedded_path_len >= MAX_PATH) {
+    print_error(L"内置安装脚本路径过长。");
+    pause_for_user();
+    return 1;
+  }
+
+  if (!write_embedded_install_script(embedded_script_path)) {
+    print_error(L"无法创建内置安装脚本。");
+    pause_for_user();
+    return 1;
+  }
+  SetEnvironmentVariableW(L"XIAOMA_HERMES_EMBEDDED_INSTALL_PS1", embedded_script_path);
 
   wchar_t command_line[MAX_PATH * 2 + 128];
   int command_len = swprintf(
