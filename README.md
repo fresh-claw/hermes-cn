@@ -21,13 +21,13 @@ macOS：
 Windows PowerShell：
 
 ```powershell
-irm https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.06.1/install.ps1 | iex
+irm https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.07.1/install.ps1 | iex
 ```
 
 macOS / Linux / WSL2：
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.06.1/install.sh | bash -s -- --include-desktop
+curl -fsSL https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.07.1/install.sh | bash -s -- --include-desktop
 ```
 
 ## 平台策略
@@ -58,8 +58,8 @@ curl -fsSL https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.06.1/instal
 
 ## 版本
 
-- 桌面入口：2026.06.06.1
-- 中文包：2026.06.06.1
+- 桌面入口：2026.06.07.1
+- 中文包：2026.06.07.1
 - 官方 Hermes Agent：v0.15.2
 
 ## 上游
