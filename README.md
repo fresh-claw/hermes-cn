@@ -58,9 +58,9 @@ curl -fsSL http://47.121.138.43/hermes/install.sh | bash -s -- --include-desktop
 
 ## 版本
 
-- 桌面入口：2026.06.07.4
-- 中文包：2026.06.07.4
-- 官方 Hermes Agent：v0.15.2
+- 桌面入口：2026.06.07.5
+- 中文包：2026.06.07.5
+- 官方 Hermes Agent：v0.16.0
 
 ## 上游
 
