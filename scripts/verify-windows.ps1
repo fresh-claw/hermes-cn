@@ -1,5 +1,5 @@
 param(
-  [string]$Version = "2026.06.08.2"
+  [string]$Version = "2026.06.12.1"
 )
 
 $ErrorActionPreference = "Stop"
@@ -34,6 +34,9 @@ $installPs1 = Get-Content -Raw -Path (Join-Path $Root "install.ps1")
 Assert-True ($installPs1.Contains("v$Version")) "install.ps1 version marker mismatch"
 Assert-True ($installPs1.Contains("Download-OfficialInstaller")) "official installer validation missing"
 Assert-True ($installPs1.Contains("Move-HermesAgentSourceAside")) "official repair fallback missing"
+Assert-True ($installPs1.Contains("Ensure-WindowsNode")) "Windows Node.js preparation missing"
+Assert-True ($installPs1.Contains("cdn.npmmirror.com/binaries/node/index.json")) "Node.js China mirror missing"
+Assert-True ($installPs1.Contains("nodejs.org/dist/index.json")) "Node.js official fallback missing"
 
 $exeBytes = [System.IO.File]::ReadAllBytes((Join-Path $Root "Hermes-zh-CN-Setup.exe"))
 $exeText = [System.Text.Encoding]::UTF8.GetString($exeBytes)

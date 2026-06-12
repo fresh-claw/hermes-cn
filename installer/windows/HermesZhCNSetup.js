@@ -7,7 +7,7 @@ const readline = require("readline");
 const { spawnSync } = require("child_process");
 
 const DEFAULT_BASE_URL = "http://47.121.138.43/hermes";
-const DEFAULT_FALLBACK_BASE_URL = "https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.08.2";
+const DEFAULT_FALLBACK_BASE_URL = "https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.12.1";
 
 function envOrDefault(name, fallback) {
   const value = process.env[name];
@@ -67,7 +67,7 @@ function looksLikeInstaller(script) {
   return script.includes("param(")
     && script.includes("Hermes 中文增强")
     && script.includes("Find-HermesCommand")
-    && script.includes("v2026.06.08.2");
+    && script.includes("v2026.06.12.1");
 }
 
 async function resolveInstallerScript(baseUrl, fallbackBaseUrl) {
@@ -81,7 +81,7 @@ async function resolveInstallerScript(baseUrl, fallbackBaseUrl) {
   }
 
   const tempScript = path.join(os.tmpdir(), "xiaoma-hermes-install.ps1");
-  const sources = [baseUrl, fallbackBaseUrl, "https://fastly.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.08.2"];
+  const sources = [baseUrl, fallbackBaseUrl, "https://fastly.jsdelivr.net/gh/fresh-claw/hermes-cn@v2026.06.12.1"];
   let lastError = null;
   for (const source of sources) {
     try {
