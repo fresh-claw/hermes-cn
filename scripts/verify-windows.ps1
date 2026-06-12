@@ -177,6 +177,9 @@ Assert-True ($installPs1.Contains("Move-HermesAgentSourceAside")) "official repa
 Assert-True ($installPs1.Contains("Ensure-WindowsNode")) "Windows Node.js preparation missing"
 Assert-True ($installPs1.Contains("cdn.npmmirror.com/binaries/node/index.json")) "Node.js China mirror missing"
 Assert-True ($installPs1.Contains("nodejs.org/dist/index.json")) "Node.js official fallback missing"
+Assert-True ($installPs1.Contains("HERMES_GIT_BASH_PATH")) "Git Bash environment override missing"
+Assert-True ($installPs1.Contains("git\usr\bin\bash.exe")) "PortableGit usr bash fallback missing"
+Assert-True ($installPs1.Contains("Programs\Git\bin\bash.exe")) "Git for Windows user install fallback missing"
 
 $exeBytes = [System.IO.File]::ReadAllBytes((Join-Path $Root "Hermes-zh-CN-Setup.exe"))
 $exeText = [System.Text.Encoding]::UTF8.GetString($exeBytes)
