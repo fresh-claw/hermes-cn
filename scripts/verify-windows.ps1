@@ -39,6 +39,41 @@ public static class $className {
   Add-Type -TypeDefinition $source -Language CSharp -OutputAssembly $Path -OutputType ConsoleApplication
 }
 
+function New-FakeBashExe([string]$Path, [string]$Version) {
+  $className = "BashStub" + ([guid]::NewGuid().ToString("N"))
+  $source = @"
+using System;
+using System.IO;
+using System.Text;
+public static class $className {
+  public static int Main(string[] args) {
+    if (args.Length > 0 && args[0] == "-lc") {
+      Console.WriteLine(Environment.GetEnvironmentVariable("HERMES_HOME") ?? "");
+      return 0;
+    }
+
+    string installHome = Environment.GetEnvironmentVariable("XIAOMA_HERMES_HOME") ?? Path.Combine(Path.GetTempPath(), "xiaoma-hermes");
+    string hermesHome = Environment.GetEnvironmentVariable("HERMES_HOME") ?? Path.Combine(Path.GetTempPath(), ".hermes");
+    string sourceRoot = Environment.GetEnvironmentVariable("XIAOMA_HERMES_SOURCE_ROOT") ?? "";
+    string releaseDir = Path.Combine(installHome, "releases", "$Version");
+    Directory.CreateDirectory(releaseDir);
+    File.WriteAllText(Path.Combine(releaseDir, "PATCH_STATUS"), "{\"state\":\"applied\",\"patched\":[\"hermes_cli/banner.py\"]}", Encoding.UTF8);
+
+    if (!String.IsNullOrWhiteSpace(sourceRoot)) {
+      string banner = Path.Combine(sourceRoot, "hermes_cli", "banner.py");
+      Directory.CreateDirectory(Path.GetDirectoryName(banner));
+      File.AppendAllText(banner, "\n# 爱马仕机器人\n", Encoding.UTF8);
+    }
+
+    Directory.CreateDirectory(hermesHome);
+    File.WriteAllText(Path.Combine(hermesHome, "config.yaml"), "display:\n  language: zh\n", Encoding.UTF8);
+    return 0;
+  }
+}
+"@
+  Add-Type -TypeDefinition $source -Language CSharp -OutputAssembly $Path -OutputType ConsoleApplication
+}
+
 function Invoke-NodeBootstrapVerification {
   if (-not $IsWindows) {
     Write-Host "node bootstrap verification skipped outside Windows"
@@ -55,10 +90,12 @@ function Invoke-NodeBootstrapVerification {
   $sourceRoot = Join-Path $temp "source"
   $installHome = Join-Path $temp "xiaoma"
   $bin = Join-Path $temp "bin"
-  New-Item -ItemType Directory -Force -Path $serverRoot, $oldNodeBin, $fakeNodeDir, $home, $hermesHome, $sourceRoot, (Join-Path $sourceRoot "hermes_cli"), $bin | Out-Null
+  $fakeBashDir = Join-Path $hermesHome "git\usr\bin"
+  New-Item -ItemType Directory -Force -Path $serverRoot, $oldNodeBin, $fakeNodeDir, $home, $hermesHome, $sourceRoot, (Join-Path $sourceRoot "hermes_cli"), $bin, $fakeBashDir | Out-Null
 
   New-FakeNodeExe -Path (Join-Path $oldNodeBin "node.exe") -Version "v18.20.0"
   New-FakeNodeExe -Path (Join-Path $fakeNodeDir "node.exe") -Version "v22.22.3"
+  New-FakeBashExe -Path (Join-Path $fakeBashDir "bash.exe") -Version $Version
 
   $zipDir = Join-Path $serverRoot "node/v22.22.3"
   New-Item -ItemType Directory -Force -Path $zipDir | Out-Null
@@ -191,7 +228,9 @@ $bin = Join-Path $temp "bin"
 $hermesHome = Join-Path $home ".hermes"
 $sourceRoot = Join-Path $temp "source"
 $installHome = Join-Path $temp "xiaoma"
-New-Item -ItemType Directory -Force -Path $bin, $hermesHome, $sourceRoot, (Join-Path $sourceRoot "hermes_cli") | Out-Null
+$fakeBashDir = Join-Path $hermesHome "git\usr\bin"
+New-Item -ItemType Directory -Force -Path $bin, $hermesHome, $sourceRoot, (Join-Path $sourceRoot "hermes_cli"), $fakeBashDir | Out-Null
+New-FakeBashExe -Path (Join-Path $fakeBashDir "bash.exe") -Version $Version
 
 $fakeHermes = Join-Path $bin "hermes"
 Set-Content -Path $fakeHermes -Encoding UTF8 -Value @'
