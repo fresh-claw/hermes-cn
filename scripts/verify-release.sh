@@ -40,6 +40,10 @@ root = Path.cwd()
 install_sh = (root / "install.sh").read_text(encoding="utf-8")
 if f'PACKAGE_VERSION="{version}"' not in install_sh:
     raise SystemExit("install.sh version mismatch")
+for rel in ("install.ps1", "install.sh", "install.command", "install-windows.cmd", "installer/windows/HermesZhCNSetup.c", "installer/windows/HermesZhCNSetup.js"):
+    text = (root / rel).read_text(encoding="utf-8", errors="ignore")
+    if "fresh-claw/hermes-cn@v2026.06.12.1" in text:
+        raise SystemExit(f"{rel} still uses stale pinned fallback tag")
 
 match = re.search(r'DATA = """\n(.*?)\n"""', install_sh, re.S)
 if not match:
@@ -62,11 +66,11 @@ with zipfile.ZipFile(root / "hermes-macos-installer.zip") as archive:
     zipped_command = archive.read("install.command").decode("utf-8")
 if f'PACKAGE_VERSION="{version}"' not in zipped_install:
     raise SystemExit("mac zip install.sh version mismatch")
-if f"v{version}" not in zipped_command:
+if version not in zipped_command:
     raise SystemExit("mac zip install.command version mismatch")
 
 exe_bytes = (root / "Hermes-zh-CN-Setup.exe").read_bytes()
-if f"v{version}".encode() not in exe_bytes:
+if version.encode() not in exe_bytes:
     raise SystemExit("windows exe embedded version mismatch")
 
 header_text = (root / "installer/windows/embedded_install_ps1.h").read_text(encoding="utf-8")
@@ -121,9 +125,9 @@ if manifest["version"] != version:
     raise SystemExit("site manifest version mismatch")
 if latest["packages"][0]["sha256"] != manifest["files"][0]["sha256"]:
     raise SystemExit("site package sha mismatch")
-if f"v=20260613-exe-git-1" not in latest["install_windows_exe"]:
+if f"v=20260613-exe-main-1" not in latest["install_windows_exe"]:
     raise SystemExit("windows cache marker missing")
-if f"v=20260612-mac-1" not in latest["install_macos_zip"]:
+if f"v=20260613-mac-main-1" not in latest["install_macos_zip"]:
     raise SystemExit("mac cache marker missing")
 print("site files ok")
 PY
