@@ -1,0 +1,45 @@
+name: Windows installer smoke test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "Hermes-zh-CN-Setup.exe"
+      - "install.ps1"
+      - "install.sh"
+      - "install-windows.cmd"
+      - "scripts/verify-windows.ps1"
+      - ".github/workflows/windows-installer-smoke.yml"
+
+jobs:
+  verify-windows-installer:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify Windows installer flow
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          powershell -NoProfile -ExecutionPolicy Bypass -File scripts\verify-windows.ps1 -BaseUrl "http://127.0.0.1:18765"
+
+      - name: Verify embedded installer markers
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          $exe = [System.IO.File]::ReadAllBytes("Hermes-zh-CN-Setup.exe")
+          $text = [System.Text.Encoding]::UTF8.GetString($exe)
+          foreach ($marker in @(
+            "Ensure-WindowsGitBash",
+            "node-v22.22.3-win-",
+            "MinGit-2.54.0-64-bit.zip",
+            "hermes-cn@main"
+          )) {
+            if (-not $text.Contains($marker)) {
+              throw "Windows EXE missing marker: $marker"
+            }
+          }
