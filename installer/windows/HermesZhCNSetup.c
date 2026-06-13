@@ -26,7 +26,7 @@ static const wchar_t kLauncherScript[] =
     L"  if ([string]::IsNullOrWhiteSpace($path)) { return $false }\r\n"
     L"  if (-not (Test-Path $path)) { return $false }\r\n"
     L"  $text = Get-Content -Raw -Path $path -ErrorAction SilentlyContinue\r\n"
-    L"  return ($text -and $text.Contains('Hermes 中文增强') -and $text.Contains('Find-HermesCommand') -and $text.Contains('Ensure-WindowsGitBash') -and $text.Contains('node-v22.22.3-win'))\r\n"
+    L"  return ($text -and $text.Contains('Hermes 中文增强') -and $text.Contains('Find-HermesCommand') -and $text.Contains('Ensure-WindowsGitBash') -and $text.Contains('node-v22.22.3-win') -and $text.Contains('Get-LocalInstallerAssetPaths'))\r\n"
     L"}\r\n"
     L"Write-Host 'Hermes 中文增强安装器'\r\n"
     L"Write-Host ''\r\n"

@@ -29,14 +29,18 @@ README = """Hermes 中文增强 Windows 测试包
 1. 双击 run-self-check.cmd。
    看到“windows verification passed”或没有红色错误后继续。
 
-2. 双击 Hermes-zh-CN-Setup.exe。
+2. 可选：双击 download-offline-components.cmd。
+   它会把 Node.js 和 Git Bash 便携组件下载到当前文件夹。网络慢时，安装器会优先使用这些本地组件。
+
+3. 双击 Hermes-zh-CN-Setup.exe。
    安装窗口会停留，失败时截图完整窗口。
 
-3. 安装完成后重新打开 Hermes，检查桌面快捷方式和中文界面。
+4. 安装完成后重新打开 Hermes，检查桌面快捷方式和中文界面。
 
 当前包包含的关键修复：
 - 自动准备 Node.js 22，优先国内镜像，并有固定版本兜底。
 - 自动准备便携 Git Bash，优先国内镜像，并有固定 MinGit 兜底。
+- 支持把 Node.js / MinGit 压缩包放在 EXE 同目录，安装时优先读取本地组件。
 - 备用安装入口使用 main，避免回到旧安装器。
 
 如果失败，请把窗口文字和 CHECKSUMS.json 一起发回。
@@ -59,6 +63,31 @@ if errorlevel 1 (
 )
 echo.
 echo 自检完成。现在可以运行 Hermes-zh-CN-Setup.exe。
+pause
+"""
+
+
+DOWNLOAD_OFFLINE_COMPONENTS = r"""@echo off
+setlocal
+chcp 65001 >nul
+title Hermes 中文增强离线组件下载
+cd /d "%~dp0"
+echo Hermes 中文增强离线组件下载
+echo.
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$ErrorActionPreference='Stop';" ^
+  "$ProgressPreference='SilentlyContinue';" ^
+  "function GetOne($name,$urls){ foreach($u in $urls){ try{ Write-Host ('正在下载 ' + $name + ': ' + $u); Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile (Join-Path (Get-Location) $name) -TimeoutSec 240; return } catch { Write-Host '当前入口不可用或过慢，正在切换下一个入口。' } }; throw ($name + ' 下载失败') };" ^
+  "GetOne 'node-v22.22.3-win-x64.zip' @('https://cdn.npmmirror.com/binaries/node/v22.22.3/node-v22.22.3-win-x64.zip','https://nodejs.org/dist/v22.22.3/node-v22.22.3-win-x64.zip');" ^
+  "GetOne 'MinGit-2.54.0-64-bit.zip' @('https://registry.npmmirror.com/-/binary/git-for-windows/v2.54.0.windows.1/MinGit-2.54.0-64-bit.zip','https://mirrors.tuna.tsinghua.edu.cn/github-release/git-for-windows/git/LatestRelease/MinGit-2.54.0-64-bit.zip')"
+if errorlevel 1 (
+  echo.
+  echo 离线组件下载失败。可以稍后再试，也可以直接运行安装器。
+  pause
+  exit /b 1
+)
+echo.
+echo 离线组件已准备好。现在可以运行 Hermes-zh-CN-Setup.exe。
 pause
 """
 
@@ -96,6 +125,7 @@ def main() -> int:
 
     (pack_dir / "README.txt").write_text(README, encoding="utf-8")
     (pack_dir / "run-self-check.cmd").write_text(RUN_SELF_CHECK, encoding="utf-8")
+    (pack_dir / "download-offline-components.cmd").write_text(DOWNLOAD_OFFLINE_COMPONENTS, encoding="utf-8")
 
     manifest = {
         "created_at": time.strftime("%Y-%m-%d %H:%M:%S"),

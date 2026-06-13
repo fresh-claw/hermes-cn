@@ -87,6 +87,8 @@ if embedded_ps1 != install_ps1:
     raise SystemExit("embedded install.ps1 header mismatch")
 for marker in (
     b"Ensure-WindowsNode",
+    b"Get-LocalInstallerAssetPaths",
+    b"XIAOMA_HERMES_EXE_DIR",
     b"node-v22.22.3-win-$Arch.zip",
     b"Ensure-WindowsGitBash",
     b"registry.npmmirror.com/-/binary/git-for-windows/",
@@ -131,7 +133,7 @@ if manifest["version"] != version:
     raise SystemExit("site manifest version mismatch")
 if latest["packages"][0]["sha256"] != manifest["files"][0]["sha256"]:
     raise SystemExit("site package sha mismatch")
-if f"v=20260613-exe-main-1" not in latest["install_windows_exe"]:
+if f"v=20260613-exe-offline-1" not in latest["install_windows_exe"]:
     raise SystemExit("windows cache marker missing")
 if f"v=20260613-mac-main-1" not in latest["install_macos_zip"]:
     raise SystemExit("mac cache marker missing")
