@@ -69,9 +69,28 @@ exe_bytes = (root / "Hermes-zh-CN-Setup.exe").read_bytes()
 if f"v{version}".encode() not in exe_bytes:
     raise SystemExit("windows exe embedded version mismatch")
 
+header_text = (root / "installer/windows/embedded_install_ps1.h").read_text(encoding="utf-8")
+header_values = [int(value, 16) for value in re.findall(r"0x([0-9a-fA-F]{2})", header_text)]
+embedded_ps1 = bytes(header_values)
+install_ps1 = (root / "install.ps1").read_bytes()
+if embedded_ps1 != install_ps1:
+    raise SystemExit("embedded install.ps1 header mismatch")
+for marker in (
+    b"Ensure-WindowsNode",
+    b"node-v22.22.3-win-$Arch.zip",
+    b"Ensure-WindowsGitBash",
+    b"registry.npmmirror.com/-/binary/git-for-windows/",
+    b"MinGit-2.54.0-64-bit.zip",
+):
+    if marker not in embedded_ps1:
+        raise SystemExit(f"embedded install.ps1 missing {marker.decode('utf-8')}")
+    if marker not in exe_bytes:
+        raise SystemExit(f"windows exe missing {marker.decode('utf-8')}")
+
 print("embedded payload ok")
 print("mac zip ok")
 print("windows exe marker ok")
+print("windows exe payload ok")
 PY
 
 if [ -d "$SITE_WEB_DIR" ]; then
