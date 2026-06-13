@@ -45,6 +45,12 @@ for rel in ("install.ps1", "install.sh", "install.command", "install-windows.cmd
     if "fresh-claw/hermes-cn@v2026.06.12.1" in text:
         raise SystemExit(f"{rel} still uses stale pinned fallback tag")
 
+verify_windows = (root / "scripts/verify-windows.ps1").read_text(encoding="utf-8", errors="ignore")
+if "Start-Process -FilePath python" in verify_windows or "python -m http.server" in verify_windows:
+    raise SystemExit("Windows verifier still depends on Python HTTP server")
+if "Start-LocalFileServer" not in verify_windows:
+    raise SystemExit("Windows verifier missing PowerShell local file server")
+
 match = re.search(r'DATA = """\n(.*?)\n"""', install_sh, re.S)
 if not match:
     raise SystemExit("embedded payload not found")
