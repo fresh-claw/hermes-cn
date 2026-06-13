@@ -77,7 +77,7 @@ echo.
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
   "$ErrorActionPreference='Stop';" ^
   "$ProgressPreference='SilentlyContinue';" ^
-  "function GetOne($name,$urls){ foreach($u in $urls){ try{ Write-Host ('正在下载 ' + $name + ': ' + $u); Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile (Join-Path (Get-Location) $name) -TimeoutSec 240; return } catch { Write-Host '当前入口不可用或过慢，正在切换下一个入口。' } }; throw ($name + ' 下载失败') };" ^
+  "function GetOne($name,$urls){ $out=Join-Path (Get-Location) $name; foreach($u in $urls){ try{ Write-Host ('正在下载 ' + $name + ': ' + $u); $curl=Get-Command curl.exe -ErrorAction SilentlyContinue; if($curl){ & $curl.Source -L --fail --connect-timeout 20 --max-time 360 --retry 2 --retry-delay 2 -o $out $u; if($LASTEXITCODE -ne 0){ throw ('curl.exe 退出码 ' + $LASTEXITCODE) } } else { Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile $out -TimeoutSec 300 }; if((Test-Path $out) -and ((Get-Item $out).Length -gt 0)){ return }; throw '下载文件为空' } catch { Write-Host '当前入口不可用或过慢，正在切换下一个入口。' } }; throw ($name + ' 下载失败') };" ^
   "GetOne 'node-v22.22.3-win-x64.zip' @('https://cdn.npmmirror.com/binaries/node/v22.22.3/node-v22.22.3-win-x64.zip','https://nodejs.org/dist/v22.22.3/node-v22.22.3-win-x64.zip');" ^
   "GetOne 'MinGit-2.54.0-64-bit.zip' @('https://registry.npmmirror.com/-/binary/git-for-windows/v2.54.0.windows.1/MinGit-2.54.0-64-bit.zip','https://mirrors.tuna.tsinghua.edu.cn/github-release/git-for-windows/git/LatestRelease/MinGit-2.54.0-64-bit.zip')"
 if errorlevel 1 (
