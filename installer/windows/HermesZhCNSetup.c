@@ -19,7 +19,7 @@ static const wchar_t kLauncherScript[] =
     L"if ([string]::IsNullOrWhiteSpace($fallback)) { $fallback = 'https://cdn.jsdelivr.net/gh/fresh-claw/hermes-cn@main' }\r\n"
     L"$fallback = $fallback.TrimEnd('/')\r\n"
     L"$exeDir = $env:XIAOMA_HERMES_EXE_DIR\r\n"
-    L"$localPs1 = Join-Path $exeDir 'install.ps1'\r\n"
+    L"$localPs1 = if ([string]::IsNullOrWhiteSpace($exeDir)) { '' } else { Join-Path $exeDir 'install.ps1' }\r\n"
     L"$embeddedPs1 = $env:XIAOMA_HERMES_EMBEDDED_INSTALL_PS1\r\n"
     L"function Pause-Hermes { Write-Host ''; Read-Host '按回车关闭窗口' | Out-Null }\r\n"
     L"function Test-InstallerPs1([string]$path) {\r\n"
